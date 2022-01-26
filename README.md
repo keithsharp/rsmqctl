@@ -1,5 +1,5 @@
 # RSMQ Command Line Interface
-`rsmq-cli` is a command line interface for [RSMQ]().  The CLI is developed and tested in Python using the [PyRSQM]() package.
+`rsmqctl` is a command line interface for [RSMQ](https://github.com/smrchy/rsmq).  The CLI is developed and tested in Python using the [PyRSMQ](https://github.com/mlasevich/PyRSMQ) package.
 
 # Copyright and License
 Copyright 2022, Keith Sharp, kms@passback.co.uk.
