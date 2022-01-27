@@ -43,7 +43,7 @@ def describe(ctx, name):
         print(json.dumps(attributes))
         sys.exit(0)
     else:
-        print('No such queue: {}'.format(name))
+        print('No such queue: {}'.format(name), file=sys.stderr)
         sys.exit(1)
 
 @queue.command()
@@ -55,14 +55,14 @@ def describe(ctx, name):
 def create(ctx, name, vt, delay, maxsize):
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
     if queue:
-        print('Queue already exists: {}'.format(name))
+        print('Queue already exists: {}'.format(name), file=sys.stderr)
         sys.exit(1)
     
     success = ctx.obj.createQueue(qname=name, vt=vt, delay=delay, maxsize=maxsize).execute()
     if success:
         sys.exit(0)
     else:
-        print('Failed to create queue: {}'.format(name))
+        print('Failed to create queue: {}'.format(name), file=sys.stderr)
         sys.exit(1)
 
 
@@ -72,14 +72,14 @@ def create(ctx, name, vt, delay, maxsize):
 def delete(ctx, name):
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
     if not queue:
-        print('No such queue: {}'.format(name))
+        print('No such queue: {}'.format(name), file=sys.stderr)
         sys.exit(1)
 
     success = ctx.obj.deleteQueue(qname=name).execute()
     if success:
         sys.exit(0)
     else:
-        print('Failed to delete queue: {}'.format(name))
+        print('Failed to delete queue: {}'.format(name), file=sys.stderr)
         sys.exit(1)
 
 @cli.group()
@@ -95,7 +95,7 @@ def message(ctx):
 def send(ctx, name, message, delay):
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
     if not queue:
-        print('No such queue: {}'.format(name))
+        print('No such queue: {}'.format(name), file=sys.stderr)
         sys.exit(1)
 
     result = ctx.obj.sendMessage(qname=name, message=message, delay=delay, quiet=True).execute()
@@ -103,7 +103,7 @@ def send(ctx, name, message, delay):
         print(result)
         sys.exit(0)
     else:
-        print('Failed to send message: {}'.format(message))
+        print('Failed to send message: {}'.format(message), file=sys.stderr)
         sys.exit(1)
 
 @message.command()
@@ -113,14 +113,14 @@ def send(ctx, name, message, delay):
 def delete(ctx, name, id):
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
     if not queue:
-        print('No such queue: {}'.format(name))
+        print('No such queue: {}'.format(name), file=sys.stderr)
         sys.exit(1)
     
     result = ctx.obj.deleteMessage(qname=name, id=id, quiet=True).execute()
     if result:
         sys.exit(0)
     else:
-        print('Failed to delete message ID: {}'.format(id))
+        print('Failed to delete message ID: {}'.format(id), file=sys.stderr)
         sys.exit(1)
 
 @message.command()
@@ -130,7 +130,7 @@ def delete(ctx, name, id):
 def receive(ctx, name, vt):
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
     if not queue:
-        print('No such queue: {}'.format(name))
+        print('No such queue: {}'.format(name), file=sys.stderr)
         sys.exit(1)
     
     client = ctx.obj.receiveMessage(qname=name, quiet=True)
@@ -151,7 +151,7 @@ def receive(ctx, name, vt):
 def pop(ctx, name):
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
     if not queue:
-        print('No such queue: {}'.format(name))
+        print('No such queue: {}'.format(name), file=sys.stderr)
         sys.exit(1)
 
     message = ctx.obj.popMessage(qname=name, quite=True).execute()
@@ -171,7 +171,7 @@ def pop(ctx, name):
 def visibility(ctx, name, id, vt):
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
     if not queue:
-        print('No such queue: {}'.format(name))
+        print('No such queue: {}'.format(name), file=sys.stderr)
         sys.exit(1)
     
     result = ctx.obj.changeMessageVisibility(qname=name, id=id, vt=vt).execute()
@@ -179,7 +179,7 @@ def visibility(ctx, name, id, vt):
         print('Message ID: {} visibility timeout set to {}s'.format(id, vt))
         sys.exit(0)
     else:
-        print('Failed to change visibility timeout for message ID: {}'.format(id))
+        print('Failed to change visibility timeout for message ID: {}'.format(id), file=sys.stderr)
         sys.exit(1)
 
 if __name__ == '__main__':
