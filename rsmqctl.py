@@ -8,12 +8,11 @@ from redis import Redis
 from rsmq import RedisSMQ
 
 @click.group()
-@click.option('-h', '--host', 'host', default='127.0.0.1')
-@click.option('-p', '--port', 'port', default=6379, type=int)
+@click.option('-r', '--redis-url', 'redis_url', default='redis://localhost:6379')
 @click.option('-v', '--verbose', 'verbose', is_flag=True)
 @click.pass_context
-def cli(ctx, host, port, verbose):
-    redis_client = Redis(host=host, port=port)
+def cli(ctx, redis_url, verbose):
+    redis_client = Redis.from_url(redis_url)
     client = RedisSMQ(client=redis_client)
     if verbose:
         client.exceptions(True)
