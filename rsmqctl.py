@@ -1,5 +1,3 @@
-from http import client
-from tabnanny import verbose
 import click
 import json
 import sys
@@ -8,10 +6,11 @@ from redis import Redis
 from rsmq import RedisSMQ
 
 @click.group()
-@click.option('-r', '--redis-url', 'redis_url', default='redis://localhost:6379')
+@click.option('-r', '--redis-url', 'redis_url', envvar='REDIS_URL', default='redis://localhost:6379')
 @click.option('-v', '--verbose', 'verbose', is_flag=True)
 @click.pass_context
 def cli(ctx, redis_url, verbose):
+    '''Manage RSMQ queues and messages.'''
     redis_client = Redis.from_url(redis_url)
     client = RedisSMQ(client=redis_client)
     if verbose:
