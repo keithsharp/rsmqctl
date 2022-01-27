@@ -47,7 +47,7 @@ def describe(ctx, name):
 
 @queue.command()
 @click.option('-n', '--name', 'name', required=True)
-@click.option('-t', '--vt', 'vt', default=30)
+@click.option('-t', '--visibility-timeout', 'vt', default=30)
 @click.option('-d', '--delay', 'delay', default=0)
 @click.option('-m', '--maxsize', 'maxsize', default=65535)
 @click.pass_context
@@ -107,7 +107,7 @@ def send(ctx, name, message, delay):
 
 @message.command()
 @click.option('-n', '--name', 'name', required=True)
-@click.option('-i', '--id', 'id', required=True)
+@click.option('-i', '--message-id', 'id', required=True)
 @click.pass_context
 def delete(ctx, name, id):
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
@@ -124,7 +124,7 @@ def delete(ctx, name, id):
 
 @message.command()
 @click.option('-n', '--name', 'name', required=True)
-@click.option('-t', '--vt', 'vt')
+@click.option('-t', '--visibility-timeout', 'vt')
 @click.pass_context
 def receive(ctx, name, vt):
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
@@ -164,8 +164,8 @@ def pop(ctx, name):
 
 @message.command()
 @click.option('-n', '--name', 'name', required=True)
-@click.option('-i', '--id', 'id', required=True)
-@click.option('-t', '--vt', 'vt', required=True)
+@click.option('-i', '--message-id', 'id', required=True)
+@click.option('-t', '--visibility-timeout', 'vt', required=True)
 @click.pass_context
 def visibility(ctx, name, id, vt):
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
