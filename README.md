@@ -4,7 +4,14 @@
 ## Installation
 I've not yet made a release and published `rsmqpctl` to [PyPi](https://pypi.org), so for the time being you need to clone the [repository](https://github.com/keithsharp/rsmqctl) or [download a release](https://github.com/keithsharp/rsmqctl/releases/).  You can then use [pip](https://pypi.org/project/pip/) to install:
 ```bash
-pip3 install -e .
+git clone https://github.com/keithsharp/rsmqctl.git
+cd rsmqctl
+pip3 install .
+```
+Or
+```bash
+curl -OL https://github.com/keithsharp/rsmqctl/archive/refs/tags/rsmqctl-1.0.0.tar.gz
+pip3 install rsmqctl-1.0.0.tar.gz
 ```
 
 ## Using `rsmqctl`
