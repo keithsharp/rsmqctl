@@ -6,8 +6,9 @@ from redis import Redis
 from rsmq import RedisSMQ
 
 @click.group()
-@click.option('-r', '--redis-url', 'redis_url', envvar='REDIS_URL', default='redis://localhost:6379')
-@click.option('-v', '--verbose', 'verbose', is_flag=True)
+@click.option('-r', '--redis-url', 'redis_url', envvar='REDIS_URL', default='redis://localhost:6379', 
+    help='connection URL for the Redis server')
+@click.option('-v', '--verbose', 'verbose', is_flag=True, help='show Python tracebacks on error')
 @click.pass_context
 def cli(ctx, redis_url, verbose):
     '''Manage RSMQ queues and messages.'''
@@ -22,20 +23,23 @@ def cli(ctx, redis_url, verbose):
 @cli.group()
 @click.pass_context
 def queue(ctx):
+    '''Manage RSMQ queues'''
     pass
 
 @queue.command()
 @click.pass_context
 def list(ctx):
+    '''List all queues on the server'''
     queues = ctx.obj.listQueues().execute()
     result = map(lambda b: b.decode('UTF-8'), queues)
     print(json.dumps(sorted(result)))
     sys.exit(0)
 
 @queue.command()
-@click.option('-n', '--name', 'name', required=True)
+@click.option('-n', '--name', 'name', required=True, help='queue name')
 @click.pass_context
 def describe(ctx, name):
+    '''Describe the attributes of a queue'''
     attributes = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
     if attributes:
         print(json.dumps(attributes))
@@ -45,12 +49,13 @@ def describe(ctx, name):
         sys.exit(1)
 
 @queue.command()
-@click.option('-n', '--name', 'name', required=True)
-@click.option('-t', '--visibility-timeout', 'vt', default=30)
-@click.option('-d', '--delay', 'delay', default=0)
-@click.option('-m', '--maxsize', 'maxsize', default=65535)
+@click.option('-n', '--name', 'name', required=True, help='queue name')
+@click.option('-t', '--visibility-timeout', 'vt', default=30, help='visibility timeout for messages on this queue, default is 30 seconds')
+@click.option('-d', '--delay', 'delay', default=0, help='initial delay in making message visible, default is 0 seconds')
+@click.option('-m', '--maxsize', 'maxsize', default=65535, help='maximum message size, default is 65535 bytes')
 @click.pass_context
 def create(ctx, name, vt, delay, maxsize):
+    '''Create a new queue'''
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
     if queue:
         print('Queue already exists: {}'.format(name), file=sys.stderr)
@@ -65,9 +70,10 @@ def create(ctx, name, vt, delay, maxsize):
 
 
 @queue.command()
-@click.option('-n', '--name', 'name', required=True)
+@click.option('-n', '--name', 'name', required=True, help='the queue name')
 @click.pass_context
 def delete(ctx, name):
+    '''Delete a queue'''
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
     if not queue:
         print('No such queue: {}'.format(name), file=sys.stderr)
@@ -83,14 +89,16 @@ def delete(ctx, name):
 @cli.group()
 @click.pass_context
 def message(ctx):
+    '''Manage RSMQ messages'''
     pass
 
 @message.command()
-@click.option('-n', '--name', 'name', required=True)
-@click.option('-m', '--message', 'message', required=True)
-@click.option('-d', '--delay', 'delay', default=0)
+@click.option('-n', '--name', 'name', required=True, help='the queue name')
+@click.option('-m', '--message', 'message', required=True, help='body of the message, limited by the queue max message size')
+@click.option('-d', '--delay', 'delay', default=0, help='initial delay in making message visible, if not set will use queue default')
 @click.pass_context
 def send(ctx, name, message, delay):
+    '''Publish a message to the queue'''
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
     if not queue:
         print('No such queue: {}'.format(name), file=sys.stderr)
@@ -105,10 +113,11 @@ def send(ctx, name, message, delay):
         sys.exit(1)
 
 @message.command()
-@click.option('-n', '--name', 'name', required=True)
-@click.option('-i', '--message-id', 'id', required=True)
+@click.option('-n', '--name', 'name', required=True, help='the queue name')
+@click.option('-i', '--message-id', 'id', required=True, help='message identifier')
 @click.pass_context
 def delete(ctx, name, id):
+    '''Delete a message'''
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
     if not queue:
         print('No such queue: {}'.format(name), file=sys.stderr)
@@ -122,10 +131,11 @@ def delete(ctx, name, id):
         sys.exit(1)
 
 @message.command()
-@click.option('-n', '--name', 'name', required=True)
-@click.option('-t', '--visibility-timeout', 'vt')
+@click.option('-n', '--name', 'name', required=True, help='the queue name')
+@click.option('-t', '--visibility-timeout', 'vt', type=int, help='visibility timeout for the message, if not set will use queue default')
 @click.pass_context
 def receive(ctx, name, vt):
+    '''Fetch next message from the queue and mark hidden'''
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
     if not queue:
         print('No such queue: {}'.format(name), file=sys.stderr)
@@ -144,9 +154,10 @@ def receive(ctx, name, vt):
     sys.exit(0)
 
 @message.command()
-@click.option('-n', '--name', 'name', required=True)
+@click.option('-n', '--name', 'name', required=True, help='the queue name')
 @click.pass_context
 def pop(ctx, name):
+    '''Fetch and then delete the next message from the queue'''
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
     if not queue:
         print('No such queue: {}'.format(name), file=sys.stderr)
@@ -162,9 +173,9 @@ def pop(ctx, name):
     sys.exit(0)
 
 @message.command()
-@click.option('-n', '--name', 'name', required=True)
-@click.option('-i', '--message-id', 'id', required=True)
-@click.option('-t', '--visibility-timeout', 'vt', required=True)
+@click.option('-n', '--name', 'name', required=True, help='the queue name')
+@click.option('-i', '--message-id', 'id', required=True, help='message identifier')
+@click.option('-t', '--visibility-timeout', 'vt', required=True, type=int, help='visibility timeout for the message')
 @click.pass_context
 def visibility(ctx, name, id, vt):
     queue = ctx.obj.getQueueAttributes(qname=name, quiet=True).execute()
