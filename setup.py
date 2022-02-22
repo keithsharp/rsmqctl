@@ -18,7 +18,7 @@ setup(
 		packages = find_packages(),
 		entry_points ={
 			'console_scripts': [
-				'rsmqctl = rsmqctl:cli'
+				'rsmqctl = rsmqctl.rsmqctl:cli'
 			]
 		},
 		classifiers =[
