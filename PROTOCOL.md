@@ -12,7 +12,7 @@ Using `redis-cli` check if there are any queues:
 ```
 Confirm using `rsmqctl`:
 ```bash
-rsmqctl queue list
+$ rsmqctl queue list
 []
 ```
 
@@ -62,12 +62,12 @@ The payload of the message is stored as field in the `rsmq:<QUEUE_NAME>:Q` hash.
 ### Example
 Send a message using `rsmqctl`:
 ```bash
-rsmqctl message send -n test-queue -m "Hello, World"
+$ rsmqctl message send -n test-queue -m "Hello, World"
 ```
 
 Get the message ID from the `rsmq:test-queue` zset and then get the visibility timestamp using the `redis-cli`:
 ```
-ZRANGE rsmq:test-queue 0 -1
+127.0.0.1:6379> ZRANGE rsmq:test-queue 0 -1
 1) "g73zkl38qzSBNq2NcnVVlCldqwqFXRJd"
 127.0.0.1:6379> ZSCORE rsmq:test-queue g73zkl38qzSBNq2NcnVVlCldqwqFXRJd
 "1645020200667"
@@ -96,13 +96,13 @@ Use the `redis-cli` command to list the fields and values:
 When a client receives a message the timestamp for that message held in the `rsmq:<QUEUE_NAME>` score is set to the current time plus either the default visibility timeout for the queue *or* the current time plus the visibility timeout in the receive call.  The latter overrides the former.
 
 There are two new fields added to the `rsmq:<QUEUE_NAME>:Q` hash:
-+ `g73zkl38qzSBNq2NcnVVlCldqwqFXRJd:rc` - the number of times a message has been subject to a receive call.
-+ `g73zkl38qzSBNq2NcnVVlCldqwqFXRJd:fr` - the timestamp when the message first became visible on the queue.
++ `<MESSAGE_ID>:rc` - the number of times a message has been subject to a receive call.
++ `<MESSAGE_ID>:fr` - the timestamp when the message first became visible on the queue.
 
 ### Example
 Receive the message using `rsmqctl`:
 ```bash
-rsmqctl message receive -n test-queue
+$ rsmqctl message receive -n test-queue
 {"id": "g73zkl38qzSBNq2NcnVVlCldqwqFXRJd", "message": "Hello, World", "rc": 1, "ts": 1645021703008}
 ```
 
@@ -149,7 +149,7 @@ Use the `redis-cli` command to view the current score for the message in the `rs
 
 Use `rsmqctl` to change the message's visibility"
 ```bash
-rsmqctl message visibility -n test-queue -i g7aoitedg36TbsB8eP2yPY8XgaLwfKN3 -t 600
+$ rsmqctl message visibility -n test-queue -i g7aoitedg36TbsB8eP2yPY8XgaLwfKN3 -t 600
 Message ID: g7aoitedg36TbsB8eP2yPY8XgaLwfKN3 visibility timeout set to 600s
 ```
 
