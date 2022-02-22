@@ -1,6 +1,8 @@
 # RSMQ Command Line Interface
 `rsmqctl` is a command line interface for [RSMQ](https://github.com/smrchy/rsmq).  The CLI is developed and tested in Python using the [PyRSMQ](https://github.com/mlasevich/PyRSMQ) package.
 
+I've also documented how RSMQ uses Redis in [PROTOCOL.md](https://github.com/keithsharp/rsmqctl/blob/main/PROTOCOL.md).
+
 ## Installation
 I've not yet made a release and published `rsmqpctl` to [PyPi](https://pypi.org), so for the time being you need to clone the [repository](https://github.com/keithsharp/rsmqctl) or [download a release](https://github.com/keithsharp/rsmqctl/releases/).  You can then use [pip](https://pypi.org/project/pip/) to install:
 ```bash
